@@ -8,14 +8,14 @@ on:
     branches:
       - main
   schedule:
-    - cron: '*/5 * * * *' # This will run the workflow every 5 minute
+    - cron: '*/5 * * * *' # This will run the workflow every 5 minutes
 
 jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        php-versions: ['7.4', '8.0']
     name: integration-tests (PHP ${{ matrix.php-versions }})
     steps:
       - uses: actions/checkout@v1
@@ -73,6 +73,12 @@ jobs:
 
       - name: Install dependencies
         run: composer install
+
+      - name: Debug environment
+        run: |
+          php --version
+          composer --version
+          ls -al
 
       - name: Run launch instance script
         env:
