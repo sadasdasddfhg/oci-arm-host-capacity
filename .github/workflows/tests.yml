@@ -7,9 +7,8 @@ on:
   pull_request:
     branches:
       - main
-
-#  schedule:
-#    - cron: '*/5 * * * *'
+  schedule:
+    - cron: '*/5 * * * *' # This will run the workflow every 5 minutes
 
 jobs:
   tests:
@@ -61,3 +60,28 @@ jobs:
           TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
           TELEGRAM_BOT_API_KEY: ${{ secrets.TELEGRAM_BOT_API_KEY }}
 
+  launch-instance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run launch instance script
+        env:
+          OCI_REGION: ${{ secrets.OCI_REGION }}
+          OCI_USER_ID: ${{ secrets.OCI_USER_ID }}
+          OCI_TENANCY_ID: ${{ secrets.OCI_TENANCY_ID }}
+          OCI_KEY_FINGERPRINT: ${{ secrets.OCI_KEY_FINGERPRINT }}
+          OCI_PRIVATE_KEY_FILENAME: ${{ secrets.OCI_PRIVATE_KEY_FILENAME }}
+          OCI_SUBNET_ID: ${{ secrets.OCI_SUBNET_ID }}
+          OCI_IMAGE_ID: ${{ secrets.OCI_IMAGE_ID }}
+          OCI_SSH_PUBLIC_KEY: ${{ secrets.OCI_SSH_PUBLIC_KEY }}
+        run: php index.php
